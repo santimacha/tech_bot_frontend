@@ -120,12 +120,12 @@ export default function Login() {
 
         const loginResult = await loginRes.json();
 
-        // Si el usuario tiene 2FA activado el backend devuelve esto
+        
         if (loginResult.twoFactorRequired) {
           throw new Error("Se requiere verificación de dos factores");
         }
 
-        // Caso normal: el backend devuelve { accessToken }
+        
         const response: LoginResponse = { accessToken: loginResult.accessToken };
         login(response);
 
