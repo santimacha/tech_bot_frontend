@@ -1,7 +1,7 @@
 import { useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "./Button";
-import robotHero from "../../../assets/imagenes/imagen1.png"; 
+import TeachBot from "../../../assets/TeachBot_Icono/teach_bot.png";
 
 export const HeroSection = () => {
   const heroRef = useRef(null);
@@ -47,17 +47,35 @@ export const HeroSection = () => {
           </div>
           
           {/* --- COLUMNA DERECHA: IMAGEN (ROBOT) --- */}
-          <div className="flex justify-center items-center bg-transparent"> 
-            {/* He eliminado el div absoluto de "luz de fondo" y el relative innecesario.
-               Si la imagen sigue teniendo el cuadro blanco, es probable que el archivo
-               imagen1.png no sea realmente transparente. 
-            */}
-            <img
-              className="w-full max-w-[500px] h-auto object-contain animate-float"
-              alt="Robot Asistente IA Personal"
-              src={robotHero}
-            />
-          </div>
+          <div className="relative flex items-center justify-center">
+  
+  {/* Fondo difuminado */}
+  <div className="
+    absolute
+    w-[320px]
+    h-[320px]
+    bg-purple-500/25
+    rounded-full
+    blur-3xl
+  "></div>
+
+  <img
+    className="
+      relative
+      w-full
+      max-w-[500px]
+      h-auto
+      object-contain
+      animate-float
+      hover:scale-105
+      transition-all
+      duration-500
+      drop-shadow-[0_12px_30px_rgba(147,51,234,0.35)]
+    "
+    alt="Robot Asistente IA Personal"
+    src={TeachBot}
+  />
+</div>
 
         </div>
       </div>

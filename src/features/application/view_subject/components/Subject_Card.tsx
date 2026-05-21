@@ -1,4 +1,4 @@
-import type { Subject } from "../../../../utils/interfaces/subject.interface";
+import type { Subject } from "@/shared/interfaces/subject.interface";
 
 interface SubjectCardProps {
   subject: Subject;

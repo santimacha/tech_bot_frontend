@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
-import type { Subject } from "../../../../utils/interfaces/subject.interface";
+import type { Subject } from "@/shared/interfaces/subject.interface";
 import { SubjectCard } from "./Subject_Card";
 
 interface SubjectListProps {

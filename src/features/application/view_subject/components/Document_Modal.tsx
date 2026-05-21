@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
-import type { DocumentR } from "../../../../utils/interfaces/document.interface";
+import type { DocumentR } from "@/shared/interfaces/document.interface";
 
 interface DocumentModalProps {
   isOpen: boolean;
