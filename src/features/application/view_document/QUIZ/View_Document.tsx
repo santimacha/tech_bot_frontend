@@ -57,111 +57,105 @@ export function ViewDocument() {
     const [summaryExists, setSummaryExists] = useState<boolean | null>(null)
     const [isLoadingSummary, setIsLoadingSummary] = useState(false)
 
-    // Flashcards state
+    // Flashcards 
     const [flashcards, setFlashcards] = useState<Flashcard[]>([])
     const [flashcardsExist, setFlashcardsExist] = useState<boolean | null>(null)
     const [isLoadingFlashcards, setIsLoadingFlashcards] = useState(false)
     const [modalFlashcard, setModalFlashcard] = useState<Flashcard | null>(null)
 
     // Bootstrap de check summary - flashcards
-    useEffect(() => {
-        if (!documentId) return
+    // Bootstrap de check summary - flashcards
+useEffect(() => {
+    if (!documentId) return
 
-        const checkSummary = async () => {
-            try {
-                const res = await fetch(`${Enviroment.API_URL}/summary/resumen/${documentId}`, {
-                    headers: { Authorization: `Bearer ${token}` },
-                })
-                if (res.ok) {
-                    setSummary(await res.json())
-                    setSummaryExists(true)
-                } else if (res.status === 404) {
-                    setSummaryExists(false)
-                }
-            } catch {
-                setSummaryExists(false)
-            }
-        }
-
-        const checkFlashcards = async () => {
-            try {
-                const res = await fetch(`${Enviroment.API_URL}/cards/flash/${documentId}`, {
-                    headers: { Authorization: `Bearer ${token}` },
-                })
-                if (res.ok) {
-                    const data = await res.json()
-                    setFlashcards(data)
-                    setFlashcardsExist(true)
-                } else if (res.status === 404) {
-                    setFlashcardsExist(false)
-                }
-            } catch {
-                setFlashcardsExist(false)
-            }
-        }
-
-        checkSummary()
-        checkFlashcards()
-    }, [documentId])
-
-    // escape key closes modal 
-    useEffect(() => {
-        const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") setModalFlashcard(null) }
-        window.addEventListener("keydown", onKey)
-        return () => window.removeEventListener("keydown", onKey)
-    }, [])
-
-    //handlers
-    const handleCreateSummary = async () => {
-        setIsLoadingSummary(true)
+    const checkSummary = async () => {
         try {
-            const res = await fetch(`${Enviroment.API_URL}/summary/create/${documentId}`, {
-                method: "POST",
+            const res = await fetch(`${Enviroment.API_URL}/summary/${documentId}`, {
                 headers: { Authorization: `Bearer ${token}` },
             })
-            if (!res.ok) throw new Error()
-            setSummary(await res.json())
-            setSummaryExists(true)
+            if (res.ok) {
+                setSummary(await res.json())
+                setSummaryExists(true)
+            } else if (res.status === 404) {
+                setSummaryExists(false)
+            }
         } catch {
-            console.error("Error creating summary")
-        } finally {
-            setIsLoadingSummary(false)
+            setSummaryExists(false)
         }
     }
 
-    const handleCreateFlashcards = async () => {
-        setIsLoadingFlashcards(true)
-        setFlashcardsExist(null)
+    const checkFlashcards = async () => {
         try {
-            const res = await fetch(`${Enviroment.API_URL}/cards/flash/create/${documentId}`, {
-                method: "POST",
+            const res = await fetch(`${Enviroment.API_URL}/flashcards/${documentId}`, {
                 headers: { Authorization: `Bearer ${token}` },
             })
-            if (!res.ok) throw new Error()
-
-            await new Promise((r) => setTimeout(r, 1500))
-
-            const fetchRes = await fetch(`${Enviroment.API_URL}/cards/flash/${documentId}`, {
-                headers: { Authorization: `Bearer ${token}` },
-            })
-            if (fetchRes.ok) {
-                const data = await fetchRes.json()
-                if (Array.isArray(data) && data.length > 0) {
-                    setFlashcards(data)
-                    setFlashcardsExist(true)
-                } else {
-                    setFlashcardsExist(false)
-                }
-            } else {
+            if (res.ok) {
+                const data = await res.json()
+                setFlashcards(data)
+                setFlashcardsExist(true)
+            } else if (res.status === 404) {
                 setFlashcardsExist(false)
             }
         } catch {
             setFlashcardsExist(false)
-        } finally {
-            setIsLoadingFlashcards(false)
         }
     }
 
+    checkSummary()
+    checkFlashcards()
+}, [documentId])
+
+// Handler crear resumen
+const handleCreateSummary = async () => {
+    setIsLoadingSummary(true)
+    try {
+        const res = await fetch(`${Enviroment.API_URL}/summary/${documentId}`, {
+            method: "POST",
+            headers: { Authorization: `Bearer ${token}` },
+        })
+        if (!res.ok) throw new Error()
+        setSummary(await res.json())
+        setSummaryExists(true)
+    } catch {
+        console.error("Error creating summary")
+    } finally {
+        setIsLoadingSummary(false)
+    }
+}
+
+// Handler crear flashcards
+const handleCreateFlashcards = async () => {
+    setIsLoadingFlashcards(true)
+    setFlashcardsExist(null)
+    try {
+        const res = await fetch(`${Enviroment.API_URL}/flashcards/generate/${documentId}`, {
+            method: "POST",
+            headers: { Authorization: `Bearer ${token}` },
+        })
+        if (!res.ok) throw new Error()
+
+        await new Promise((r) => setTimeout(r, 1500))
+
+        const fetchRes = await fetch(`${Enviroment.API_URL}/flashcards/${documentId}`, {
+            headers: { Authorization: `Bearer ${token}` },
+        })
+        if (fetchRes.ok) {
+            const data = await fetchRes.json()
+            if (Array.isArray(data) && data.length > 0) {
+                setFlashcards(data)
+                setFlashcardsExist(true)
+            } else {
+                setFlashcardsExist(false)
+            }
+        } else {
+            setFlashcardsExist(false)
+        }
+    } catch {
+        setFlashcardsExist(false)
+    } finally {
+        setIsLoadingFlashcards(false)
+    }
+}
     // render
     return (
         <div className="flex h-screen bg-bg-light">

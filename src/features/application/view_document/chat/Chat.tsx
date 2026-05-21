@@ -46,7 +46,7 @@ export function Chatbot() {
 
       try {
         const response = await fetch(
-          `${Enviroment.API_URL}/chat/history/${documentId}`,
+          `${Enviroment.API_URL}/chat/${documentId}`, // 🔴 CAMBIO: era /chat/history/${documentId}
           {
             method: "GET",
             headers: {
@@ -58,11 +58,15 @@ export function Chatbot() {
 
         if (!response.ok) {
           throw new Error("Error al cargar el historial")
-        }        const data = await response.json()
+        }
+        
+        const data = await response.json()
         
         const historyMessages: Message[] = []
         
-        const sortedHistory = [...data.history].sort((a: any, b: any) => 
+        // 🔴 CAMBIO: el backend puede devolver array directo o { history: [...] }
+        const history = Array.isArray(data) ? data : (data.history ?? [])
+        const sortedHistory = [...history].sort((a: any, b: any) => 
           new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
         )
         
@@ -120,7 +124,7 @@ export function Chatbot() {
 
     try {
       const response = await fetch(
-        `${Enviroment.API_URL}/chat/send/${documentId}`,
+        `${Enviroment.API_URL}/chat/${documentId}`, // 🔴 CAMBIO: era /chat/send/${documentId}
         {
           method: "POST",
           headers: {
@@ -140,10 +144,10 @@ export function Chatbot() {
       const data = await response.json()
 
       const botMessage: Message = {
-        id: `bot-${data.id}`,
-        text: data.response,
+        id: `bot-${data.id ?? Date.now()}`,          // 🔴 CAMBIO: fallback con Date.now()
+        text: data.response ?? data.message ?? "Sin respuesta", // 🔴 CAMBIO: soporta ambos campos
         sender: "bot",
-        timestamp: new Date(data.timestamp),
+        timestamp: new Date(data.timestamp ?? Date.now()), // 🔴 CAMBIO: fallback con Date.now()
       }
 
       setMessages((prev) => [...prev, botMessage])
@@ -151,7 +155,6 @@ export function Chatbot() {
       console.error("Error sending message:", err)
       setError("No se pudo enviar el mensaje. Inténtalo de nuevo.")
       
-      // Mensaje de error del bot
       const errorMessage: Message = {
         id: `error-${Date.now()}`,
         text: "Lo siento, ha ocurrido un error. Por favor, intenta de nuevo.",

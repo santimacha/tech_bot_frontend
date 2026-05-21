@@ -1,7 +1,12 @@
 export interface DocumentResponse {
-    id: number,
-    title?: string,
     message: string,
+    document: {
+        id: number,
+        title?: string,
+    },
+    // fallback por compatibilidad
+    id?: number,
+    title?: string,
 }
 
 export interface DocumentR {

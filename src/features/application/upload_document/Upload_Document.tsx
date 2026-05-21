@@ -95,9 +95,11 @@ export default function UploadDocument() {
             setProcessingStatus("Procesando documento... Esto puede tardar unos minutos.");
 
             const data: DocumentResponse = await res.json();
-            setProcessingStatus("Documento procesado con éxito.");
-            sessionStorage.setItem('documentId', data.id.toString());
-            console.log("Documento subido y procesado:", data);
+setProcessingStatus("Documento procesado con éxito.");
+// El backend retorna { message, document: { id, title } }
+const docId = data.document?.id ?? (data as any).id;
+sessionStorage.setItem('documentId', docId.toString());
+console.log("Documento subido y procesado:", data);
 
             
             setTimeout(() => {
